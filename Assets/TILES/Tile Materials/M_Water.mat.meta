@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8621cc943468edc4d8949abe08569785
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 302192
+  packageName: Hex Tile Placement Snapper
+  packageVersion: 1.0
+  assetPath: Assets/HexTilePlacementSnapper/Example/Materials/Blue.mat
+  uploadId: 707573

@@ -1,6 +1,7 @@
 # Custom
 *.log
 /.idea
+.vsconfig
 
 # Portfolio Ignores
 Assets/External
