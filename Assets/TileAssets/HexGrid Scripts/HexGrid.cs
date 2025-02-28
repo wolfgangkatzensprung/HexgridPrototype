@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections.Generic;
 using System;
 using System.Linq;
-using UnityEngine.Splines;
 
 public struct Orientation
 {
@@ -60,49 +59,49 @@ public class HexGrid : MonoBehaviour
 
     public List<Hex> OccupiedHexPositions => new List<Hex>(tilesByHex.Keys);
 
+
+    public void AddTile(Hex hex, Tile tile) => tilesByHex.Add(hex, tile);
+
+
+    #region HexGrid Utility
+
     public Vector3 HexToWorld(Hex hex)
     {
-        var M = layoutFlatTop;
-        float x = (M.f0 * hex.Q + M.f1 * hex.R) * hexSize;
-        float z = (M.f2 * hex.Q + M.f3 * hex.R) * hexSize;
+        float x = (layoutFlatTop.f0 * hex.Q + layoutFlatTop.f1 * hex.R) * hexSize;
+        float z = (layoutFlatTop.f2 * hex.Q + layoutFlatTop.f3 * hex.R) * hexSize;
 
         return new Vector3(x, 0f, z);
     }
 
-    public Hex WorldToHex(Vector3 worldPos)
+    public Vector3 FractionalHexToWorld(FractionalHex hex)
     {
-        float q = Layout.b0 * worldPos.x + Layout.b1 * worldPos.z;
-        float r = Layout.b2 * worldPos.x + Layout.b3 * worldPos.z;
-        Hex roundedHex = Hex.Round(q, r);
+        float x = (layoutFlatTop.f0 * hex.Q + layoutFlatTop.f1 * hex.R) * hexSize;
+        float z = (layoutFlatTop.f2 * hex.Q + layoutFlatTop.f3 * hex.R) * hexSize;
 
-        return roundedHex;
+        return new Vector3(x, 0f, z);
     }
 
-    public Hex WorldToHex_WithDebugLogs(Vector3 worldPos)
+    public Hex WorldToHex(Vector3 worldPosition)
     {
-        // Log the world position
-        Debug.Log($"World Position: {worldPos}");
+        float x = worldPosition.x / (hexSize * 3f / 2f);
+        float z = worldPosition.z / (hexSize * Mathf.Sqrt(3f)); // Full axial system scaling for z
 
-        // Apply the inverse transformation (Hex to World)
-        float q = Layout.b0 * worldPos.x + Layout.b1 * worldPos.z;
-        float r = Layout.b2 * worldPos.x + Layout.b3 * worldPos.z;
+        // Adjust z position considering the offset caused by the "odd-r" or "even-r" skewing.
+        float adjustedZ = z - (x / 2f);
 
-        // Log intermediate results
-        Debug.Log($"Intermediate q: {q}, r: {r}");
+        int q = Mathf.RoundToInt(x);
+        int r = Mathf.RoundToInt(adjustedZ);
+        int s = -q - r;
 
-        Hex roundedHex = Hex.Round(q, r);
-
-        Debug.Log($"Rounded Hex: Q = {roundedHex.Q}, R = {roundedHex.R}");
-
-        return roundedHex;
+        return new Hex(q, r, s);
     }
 
-    public void AddTile(Hex hex, Tile tile) => tilesByHex.Add(hex, tile);
-
-    // Method to check if the given hex has any neighbors that are not occupied
+    /// <summary>
+    /// Returns true if there is any occupied neighbour position
+    /// </summary>
     public bool HasNeighbours(Hex hex)
     {
-        var neighbors = GetNeighbours(hex);
+        var neighbors = GetAllNeighbours(hex);
         foreach (var neighbor in neighbors)
         {
             if (!IsPositionOccupied(neighbor))
@@ -113,8 +112,10 @@ public class HexGrid : MonoBehaviour
         return false; // No neighbors available
     }
 
-    // Method to get the neighbors of a given hex
-    public Hex[] GetNeighbours(Hex hex)
+    /// <summary>
+    /// Get the neighbour hex positions of a given hex
+    /// </summary>
+    public Hex[] GetAllNeighbours(Hex hex)
     {
         var neighbors = new Hex[6];
 
@@ -128,8 +129,18 @@ public class HexGrid : MonoBehaviour
         return neighbors;
     }
 
-    internal bool IsPositionOccupied(Hex hexPosition)
+    /// <summary>
+    /// Get the occupied neighbour hex positions
+    /// </summary>
+    public Hex[] GetOccupiedNeighbours(Hex hex)
+    {
+        return GetAllNeighbours(hex).Where(IsPositionOccupied).ToArray();
+    }
+
+    public bool IsPositionOccupied(Hex hexPosition)
     {
         return TilesByHex.ContainsKey(hexPosition);
     }
+
+    #endregion
 }

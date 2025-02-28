@@ -19,12 +19,12 @@ public class TilePlacer : MonoBehaviour
     private void Awake()
     {
         tilePrefabs = Resources.LoadAll<GameObject>(RESOURCE_FOLDER);
-        currentTile = SpawnTile(Vector3.zero, new Hex(0,0));
     }
 
     private void Start()
     {
         hexGrid = GetComponent<HexGrid>();
+        currentTile = SpawnTile(Vector3.zero);
     }
 
     private void Update()
@@ -42,7 +42,8 @@ public class TilePlacer : MonoBehaviour
         {
             if (!hexGrid.IsPositionOccupied(hexPosition) && hexGrid.HasNeighbours(hexPosition))
             {
-                PlaceTile(hexPosition);
+                if (CanTileBePlaced(hexPosition, currentTile))
+                PlaceTile(currentTile, hexPosition);
             }
         }
     }
@@ -100,7 +101,7 @@ public class TilePlacer : MonoBehaviour
 
     private bool TileMatchesNeighbors(Hex hex, Tile tile)
     {
-        foreach (var neighborHex in hexGrid.GetNeighbours(hex))
+        foreach (var neighborHex in hexGrid.GetAllNeighbours(hex))
         {
             if (hexGrid.TilesByHex.TryGetValue(neighborHex, out var neighborTile))
             {
@@ -134,21 +135,15 @@ public class TilePlacer : MonoBehaviour
         }
     }
 
-    private void PlaceTile(Hex hex)
+    private Tile SpawnTile(Vector3 worldPosition) => Instantiate(RndTilePrefab, worldPosition, Quaternion.identity).GetComponent<Tile>();
+
+    private void PlaceTile(Tile tile, Hex hex)
     {
         Vector3 worldPosition = hexGrid.HexToWorld(hex);
-        var tile = currentTile;
-        tile.transform.position = worldPosition;
-        tile.transform.parent = tilesHolder;
-        tile.GetComponentInChildren<Renderer>().material = defaultMaterial;
-        hexGrid.AddTile(hex, currentTile.GetComponent<Tile>());
-        currentTile = SpawnTile(worldPosition, hex);
-    }
 
-    private Tile SpawnTile(Vector3 worldPosition, Hex hex)
-    {
-        var tile = Instantiate(RndTilePrefab, worldPosition, Quaternion.identity).GetComponent<Tile>();
-        tile.Setup(hex);
-        return tile;
+        tile.Place(hex, worldPosition, transform, defaultMaterial);
+
+        // Spawn next Tile
+        currentTile = SpawnTile(worldPosition);
     }
 }

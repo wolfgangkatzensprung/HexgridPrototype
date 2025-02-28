@@ -3,6 +3,7 @@ using Sirenix.OdinInspector.Editor;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class Tile : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class Tile : MonoBehaviour
     [EnumToggleButtons]
     public Edge[] Edges = new Edge[6];
 
-    public Hex Hex { get; private set; }
+    public Hex hexPosition { get; private set; }
     private int _currentRotation = 0;
     public int CurrentRotation
     {
@@ -32,31 +33,66 @@ public class Tile : MonoBehaviour
     public Color rColor = new Color(0.5f, 0.62f, 1f); // Default blue
     public Color sColor = new Color(0.5f, 1f, 0.5f); // Default green
 
-    public void Setup(Hex hex)
+    /// <summary>
+    /// Setup the Tile
+    /// </summary>
+    /// <param name="hex">Hex Coordinates</param>
+    /// <param name="worldPosition">Transform Coordinates</param>
+    /// <param name="parent">Tiles Holder</param>
+    /// <param name="defaultMaterial">Material to switch to, when placed</param>
+    public void Place(Hex hex, Vector3 worldPosition, Transform parent, Material defaultMaterial)
     {
-        Hex = hex;
+        hexGrid = FindAnyObjectByType<HexGrid>();
+        text = GetComponentInChildren<TMP_Text>();
+
+        this.hexPosition = hex;
+
+        transform.position = worldPosition;
+        transform.parent = parent;
+        GetComponentInChildren<Renderer>().material = defaultMaterial;
+
+        hexGrid.AddTile(hex, this);
 
         for (int i = 0; i < Edges.Length; i++)
         {
             Debug.Log($"Edge{i} is {Edges[i].ToString()}");
         }
+
+        SetupCoordinatesText(hex);
+        if (TrySetupScoreTexts(hex, 100, out int neighbourCount))
+        {
+            Game.Instance.Score += 100 * neighbourCount;
+        }
     }
 
-    private void Start()
+    private void SetupCoordinatesText(Hex hex)
     {
-        hexGrid = FindAnyObjectByType<HexGrid>();
-        text = GetComponentInChildren<TMP_Text>();
-    }
-
-    private void Update()
-    {
-        Hex hex = hexGrid.WorldToHex(transform.position);
         string coloredText =
-            $"<color=#{ColorToHex(qColor)}>{hex.Q}</color>, " +
-            $"<color=#{ColorToHex(rColor)}>{hex.R}</color>, " +
-            $"<color=#{ColorToHex(sColor)}>{hex.S}</color>";
+        $"<color=#{ColorToHex(qColor)}>{hex.Q}</color>, " +
+        $"<color=#{ColorToHex(rColor)}>{hex.R}</color>, " +
+        $"<color=#{ColorToHex(sColor)}>{hex.S}</color>";
 
         text.text = coloredText;
+    }
+
+    private bool TrySetupScoreTexts(Hex hex, int scorePerEdge, out int neighbourCount)
+    {
+        var scores = new List<(Vector3,int)>();
+        var neighbours = hexGrid.GetOccupiedNeighbours(hex);
+        neighbourCount = neighbours.Length;
+        foreach (var neighbor in neighbours)
+        {
+            var dir = HexUtils.GetDirectionToNeighbor(hex, neighbor);
+            var edgePosition = (FractionalHex)hex + (FractionalHex)dir * Mathf.Sqrt(3f) * .5f;
+            var offset = (FractionalHex)dir * -0.2f; // slight offset inwards
+            var textPosition = hexGrid.FractionalHexToWorld(edgePosition + offset);
+            textPosition += Vector3.up * .5f;
+            var score = (textPosition, scorePerEdge);
+            scores.Add(score);
+        }
+
+        GetComponentInChildren<TileScoreDisplay>().ShowScores(scores);
+        return neighbourCount > 0;
     }
 
     public void Rotate(float angle)
@@ -72,10 +108,10 @@ public class Tile : MonoBehaviour
 
     public bool Matches(Tile other, int sharedEdgeIndex)
     {
-        var edgeIndex = (sharedEdgeIndex + CurrentRotation) % 6;
+        var edgeIndex = (sharedEdgeIndex + CurrentRotation + 3) % 6;
         Edge thisEdge = this.Edges[edgeIndex];
 
-        var otherEdgeIndex = (sharedEdgeIndex + other.CurrentRotation + 3) % 6;
+        var otherEdgeIndex = (sharedEdgeIndex + other.CurrentRotation) % 6;
         Edge otherEdge = other.Edges[otherEdgeIndex]; // opposite edge
 
         Debug.Log($"Shared Edge: {edgeIndex} is {thisEdge.ToString()}, Other Edge: {otherEdgeIndex} is {otherEdge.ToString()}");

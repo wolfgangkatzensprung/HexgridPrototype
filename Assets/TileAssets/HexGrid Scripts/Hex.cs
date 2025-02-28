@@ -65,7 +65,23 @@ public struct FractionalHex
         S = s;
     }
 
+    public FractionalHex(float q, float r) : this(q, r, -q - r) { }
+
+    // Convert from Hex to FractionalHex
+    public FractionalHex(int q, int r, int s)
+    {
+        Q = q;
+        R = r;
+        S = s;
+    }
+
     public float Q { get; }
     public float R { get; }
     public float S { get; }
+
+    public static FractionalHex operator +(FractionalHex a, FractionalHex b) => new FractionalHex(a.Q + b.Q, a.R + b.R);
+    public static FractionalHex operator *(FractionalHex a, float k) => new FractionalHex(a.Q * k, a.R * k, a.S * k);
+
+    public static explicit operator FractionalHex(Hex hex)
+    => new FractionalHex(hex.Q, hex.R, hex.S);
 }

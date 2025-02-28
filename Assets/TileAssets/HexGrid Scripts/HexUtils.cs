@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System;
 using System.Diagnostics;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public static class HexUtils
 {
@@ -24,9 +25,9 @@ public static class HexUtils
 
     public static Hex GetNeighbour(Hex hex, int direction) => hex + directions[direction];
 
-    public static int GetSharedEdgeIndex(Hex hexA, Hex hexB)
+    public static int GetSharedEdgeIndex(Hex self, Hex neighbor)
     {
-        var edgeDir = hexA - hexB;
+        var edgeDir = neighbor - self;
 
         for (int i = 0; i < directions.Length; i++)
         {
@@ -37,5 +38,11 @@ public static class HexUtils
         }
 
         return -1;  // invalid
+    }
+
+    public static Hex GetDirectionToNeighbor(Hex self, Hex neighbor)
+    {
+        int i = HexUtils.GetSharedEdgeIndex(self, neighbor);
+        return GetDirection(i);
     }
 }
