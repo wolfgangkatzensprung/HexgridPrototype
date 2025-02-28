@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
-using System.Diagnostics;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+﻿using System;
 
 public static class HexUtils
 {

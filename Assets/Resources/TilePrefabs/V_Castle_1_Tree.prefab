@@ -136,6 +136,10 @@ PrefabInstance:
       propertyPath: Edges.Array.data[4].Type
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1699549260020020942, guid: 198df852d773e544a8c9085fa470fc22, type: 3}
+      propertyPath: Edges.Array.data[5].Type
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2219128294479490336, guid: 198df852d773e544a8c9085fa470fc22, type: 3}
       propertyPath: m_Name
       value: V_Castle_1_Tree

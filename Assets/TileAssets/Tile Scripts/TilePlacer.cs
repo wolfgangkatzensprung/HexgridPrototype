@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(HexGrid))]
@@ -13,7 +14,6 @@ public class TilePlacer : MonoBehaviour
     private Tile currentTile;
     [SerializeField] private Transform tilesHolder;
     [SerializeField] private Material highlightMaterial;
-    [SerializeField] private Material defaultMaterial;
     [SerializeField] private Material invalidMaterial;
 
     private void Awake()
@@ -30,6 +30,9 @@ public class TilePlacer : MonoBehaviour
     private void Update()
     {
         HandleInput();
+
+        if (currentTile == null) return;
+
         UpdatePreviewTile();
         HandleRotation();
     }
@@ -50,8 +53,6 @@ public class TilePlacer : MonoBehaviour
 
     private void UpdatePreviewTile()
     {
-        if (currentTile == null) return;
-
         var hexPosition = raycaster.HexPosition;
         if (hexGrid.IsPositionOccupied(hexPosition))
         {
@@ -63,7 +64,7 @@ public class TilePlacer : MonoBehaviour
 
         bool canBePlaced = CanTileBePlaced(hexPosition, currentTile);
 
-        UpdateMaterial(canBePlaced);
+        currentTile.ApplyHighlightMaterialToBase(canBePlaced ? highlightMaterial : invalidMaterial);
 
         if (!currentTile.gameObject.activeSelf)
         {
@@ -75,20 +76,6 @@ public class TilePlacer : MonoBehaviour
     {
         var worldPos = hexGrid.HexToWorld(raycaster.HexPosition);
         currentTile.transform.position = worldPos;
-    }
-
-    private void UpdateMaterial(bool isValidPlacement)
-    {
-        var renderer = currentTile.GetComponentInChildren<Renderer>();
-
-        if (isValidPlacement)
-        {
-            renderer.material = highlightMaterial;
-        }
-        else
-        {
-            renderer.material = invalidMaterial;
-        }
     }
 
     /// <summary>
@@ -141,7 +128,7 @@ public class TilePlacer : MonoBehaviour
     {
         Vector3 worldPosition = hexGrid.HexToWorld(hex);
 
-        tile.Place(hex, worldPosition, transform, defaultMaterial);
+        tile.Place(hex, worldPosition, transform);
 
         // Spawn next Tile
         currentTile = SpawnTile(worldPosition);

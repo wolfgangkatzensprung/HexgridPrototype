@@ -229,6 +229,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1699549260020020942, guid: 198df852d773e544a8c9085fa470fc22, type: 3}
+      propertyPath: Edges.Array.data[1].Type
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1699549260020020942, guid: 198df852d773e544a8c9085fa470fc22, type: 3}
       propertyPath: Edges.Array.data[2].Type
       value: 1
       objectReference: {fileID: 0}
