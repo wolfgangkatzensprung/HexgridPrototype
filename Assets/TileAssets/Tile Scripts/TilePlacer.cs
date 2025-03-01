@@ -158,11 +158,13 @@ public class TilePlacer : MonoBehaviour
 
         Vector3 worldPosition = hexGrid.HexToWorld(hex);
 
-        tile.TryPlace(hex, worldPosition, transform);
+        if (tile.TryPlace(hex, worldPosition, transform))
+        {
+            // Spawn next Tile
+            currentTile = SpawnTile(worldPosition);
+            return true;
+        }
 
-        // Spawn next Tile
-        currentTile = SpawnTile(worldPosition);
-
-        return true;
+        return false;
     }
 }

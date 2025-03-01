@@ -46,7 +46,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e2a9669efe00e42af83d729eacf87b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rotateButton: {fileID: 0}
   Edges:
   - Type: 0
     Region: 0
@@ -165,7 +164,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 119
+    m_Bits: 0
 --- !u!114 &3908590931395420944
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -198,6 +197,10 @@ PrefabInstance:
     - target: {fileID: 3684251818419196224, guid: d3dbefdd816b79f4faa028aa6b0f8532, type: 3}
       propertyPath: m_fontSize
       value: 32
+      objectReference: {fileID: 0}
+    - target: {fileID: 3684251818419196224, guid: d3dbefdd816b79f4faa028aa6b0f8532, type: 3}
+      propertyPath: m_RaycastTarget
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6165316531998916815, guid: d3dbefdd816b79f4faa028aa6b0f8532, type: 3}
       propertyPath: m_Pivot.x
