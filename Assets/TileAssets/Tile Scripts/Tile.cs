@@ -83,6 +83,8 @@ public class Tile : MonoBehaviour
 
     private void ResetMaterials()
     {
+        if (renderers == null) return;
+
         for (int i = 0; i < renderers.Length; i++)
         {
             for (int j = 0; j < renderers[i].materials.Length; j++)

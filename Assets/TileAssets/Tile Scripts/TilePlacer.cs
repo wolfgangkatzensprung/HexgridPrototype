@@ -1,5 +1,6 @@
-using Unity.VisualScripting;
+using Lean.Touch;
 using UnityEngine;
+using UnityEngine.Splines;
 
 [RequireComponent(typeof(HexGrid))]
 public class TilePlacer : MonoBehaviour
@@ -25,6 +26,8 @@ public class TilePlacer : MonoBehaviour
     {
         hexGrid = GetComponent<HexGrid>();
         currentTile = SpawnTile(Vector3.zero);
+
+        LeanTouch.OnFingerTap += TryPlaceTileByTouch;
     }
 
     private void Update()
@@ -46,9 +49,10 @@ public class TilePlacer : MonoBehaviour
             if (!hexGrid.IsPositionOccupied(hexPosition) && hexGrid.HasNeighbours(hexPosition))
             {
                 if (CanTileBePlaced(hexPosition, currentTile))
-                PlaceTile(currentTile, hexPosition);
+                    TryPlaceTile(currentTile, hexPosition);
             }
         }
+
     }
 
     private void UpdatePreviewTile()
@@ -124,13 +128,28 @@ public class TilePlacer : MonoBehaviour
 
     private Tile SpawnTile(Vector3 worldPosition) => Instantiate(RndTilePrefab, worldPosition, Quaternion.identity).GetComponent<Tile>();
 
-    private void PlaceTile(Tile tile, Hex hex)
+    private void TryPlaceTileByTouch(LeanFinger finger)
     {
+        var hexPosition = raycaster.HexPosition;
+
+        var screenPos = finger.ScreenPosition;
+        if ((Vector2)raycaster.ScreenPosition == screenPos)
+        {
+            TryPlaceTile(currentTile, hexPosition);
+        }
+    }
+
+    private bool TryPlaceTile(Tile tile, Hex hex)
+    {
+        if (!CanTileBePlaced(hex, currentTile)) return false;
+
         Vector3 worldPosition = hexGrid.HexToWorld(hex);
 
         tile.Place(hex, worldPosition, transform);
 
         // Spawn next Tile
         currentTile = SpawnTile(worldPosition);
+
+        return true;
     }
 }

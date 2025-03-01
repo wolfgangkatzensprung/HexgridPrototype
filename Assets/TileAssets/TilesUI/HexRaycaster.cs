@@ -1,9 +1,13 @@
+using Lean.Touch;
 using UnityEngine;
 
 public class HexRaycaster : MonoBehaviour
 {
     [SerializeField] private HexGrid hexGrid;
     Plane plane = new Plane(Vector3.down, 0f);
+
+    private Vector3 screenPosition;
+    public Vector3 ScreenPosition => screenPosition;
 
     private Vector3 worldPosition;
     public Vector3 WorldPosition => worldPosition;
@@ -22,11 +26,17 @@ public class HexRaycaster : MonoBehaviour
         }
     }
 
-    private static Ray CalculateRay()
+    private Ray CalculateRay()
     {
-        var screenPos = Input.mousePosition;
-        screenPos.z = Camera.main.nearClipPlane + 1;  // get in front of camera
-        var ray = Camera.main.ScreenPointToRay(screenPos);
+#if UNITY_ANDROID
+        screenPosition = LeanTouch.Fingers.Count > 0 ?
+            LeanTouch.Fingers[0].LastScreenPosition :
+            screenPosition;
+#else
+        screenPosition = Input.mousePosition;
+#endif
+        screenPosition.z = Camera.main.nearClipPlane + 1;  // get in front of camera
+        var ray = Camera.main.ScreenPointToRay(screenPosition);
         return ray;
     }
 
