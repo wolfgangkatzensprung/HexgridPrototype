@@ -60,7 +60,18 @@ public class HexGrid : MonoBehaviour
     public List<Hex> OccupiedHexPositions => new List<Hex>(tilesByHex.Keys);
 
 
-    public void AddTile(Hex hex, Tile tile) => tilesByHex.Add(hex, tile);
+    public void AddTile(Hex hex, Tile tile)
+    {
+        tilesByHex.Add(hex, tile);
+    }
+
+    private void Update()
+    {
+        foreach(var key in tilesByHex.Keys)
+        {
+            Debug.Log($"{key} is in the list with tile {tilesByHex[key]}");
+        }
+    }
 
 
     #region HexGrid Utility
@@ -139,7 +150,9 @@ public class HexGrid : MonoBehaviour
 
     public bool IsPositionOccupied(Hex hexPosition)
     {
-        return TilesByHex.ContainsKey(hexPosition);
+        bool occupied = TilesByHex.ContainsKey(hexPosition);
+        Debug.Log($"Tiles List check for {hexPosition}. Already exits = {occupied}");
+        return occupied;
     }
 
     #endregion

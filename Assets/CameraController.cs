@@ -61,8 +61,6 @@ public class CameraController : MonoBehaviour
 
         var fingersAmount = list[0].Index == -42 ? 1 : 0; // Ignore the simulated hover finger with index -42
 
-        Debug.Log($"Handle Touch for {list.Count} Fingers");
-
         if (list.Count < fingersAmount + 2) return;
 
         float pinchScale = LeanGesture.GetPinchScale(1f);

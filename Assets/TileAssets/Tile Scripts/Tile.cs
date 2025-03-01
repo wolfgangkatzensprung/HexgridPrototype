@@ -56,7 +56,7 @@ public class Tile : MonoBehaviour
     /// <param name="worldPosition">Transform Coordinates</param>
     /// <param name="parent">Tiles Holder</param>
     /// <param name="defaultMaterial">Material to switch to, when placed</param>
-    public bool TryPlace(Hex hex, Vector3 worldPosition, Transform parent)
+    public bool TryPlace(Hex hex, Transform parent)
     {
         hexGrid = FindAnyObjectByType<HexGrid>();
         text = GetComponentInChildren<TMP_Text>();
@@ -66,11 +66,11 @@ public class Tile : MonoBehaviour
 
         this.hexPosition = hex;
 
+        Vector3 worldPosition = hexGrid.HexToWorld(hex);
         transform.position = worldPosition;
         transform.parent = parent;
 
         ResetMaterials();
-
 
         for (int i = 0; i < Edges.Length; i++)
         {
@@ -86,7 +86,7 @@ public class Tile : MonoBehaviour
         return true;
     }
 
-    private void ResetMaterials()
+    public void ResetMaterials()
     {
         if (renderers == null) return;
 
