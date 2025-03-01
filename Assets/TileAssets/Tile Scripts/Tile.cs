@@ -1,6 +1,8 @@
+#if UNITY_EDITOR
 using Sirenix.OdinInspector.Editor;
-using TMPro;
 using UnityEditor;
+#endif
+using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;

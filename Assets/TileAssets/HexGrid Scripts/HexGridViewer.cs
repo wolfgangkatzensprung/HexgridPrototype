@@ -1,5 +1,7 @@
 using UnityEngine;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 public class HexGridViewer : MonoBehaviour
 {
@@ -12,6 +14,22 @@ public class HexGridViewer : MonoBehaviour
     private void Start()
     {
         hexGrid = GetComponent<HexGrid>();
+    }
+
+    private void DrawHexagon(Vector3 center, float size)
+    {
+        float angleOffset = Mathf.PI / 3f;
+        Vector3 lastVertex = center + new Vector3(size, 0, 0);
+
+        for (int i = 1; i <= 6; i++)
+        {
+            float angle = angleOffset * i;
+            Vector3 nextVertex = center + new Vector3(size * Mathf.Cos(angle), 0, size * Mathf.Sin(angle));
+            Gizmos.DrawLine(lastVertex, nextVertex);
+            lastVertex = nextVertex;
+        }
+
+        Gizmos.DrawLine(lastVertex, center + new Vector3(size, 0, 0));
     }
 
     private void OnDrawGizmos()
@@ -33,7 +51,9 @@ public class HexGridViewer : MonoBehaviour
                 };
 
                 var hexString = $"<color=green>{hex.Q}, <color=yellow>{hex.R}, <color=cyan>{hex.S}";
+#if UNITY_EDITOR
                 Handles.Label(worldPos, hexString, labelStyle);
+#endif
             }
         }
 
@@ -43,22 +63,6 @@ public class HexGridViewer : MonoBehaviour
             Vector3 worldPos = hexGrid.HexToWorld(occupiedHex);
             DrawHexagon(worldPos, hexGrid.HexSize);
         }
-    }
-
-    private void DrawHexagon(Vector3 center, float size)
-    {
-        float angleOffset = Mathf.PI / 3f;
-        Vector3 lastVertex = center + new Vector3(size, 0, 0);
-
-        for (int i = 1; i <= 6; i++)
-        {
-            float angle = angleOffset * i;
-            Vector3 nextVertex = center + new Vector3(size * Mathf.Cos(angle), 0, size * Mathf.Sin(angle));
-            Gizmos.DrawLine(lastVertex, nextVertex);
-            lastVertex = nextVertex;
-        }
-
-        Gizmos.DrawLine(lastVertex, center + new Vector3(size, 0, 0));
     }
 }
 
