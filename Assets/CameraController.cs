@@ -57,6 +57,8 @@ public class CameraController : MonoBehaviour
 
     private void HandleTouchGesture(List<LeanFinger> list)
     {
+        if (LeanTouch.GuiInUse) return;
+
         var fingersAmount = list[0].Index == -42 ? 1 : 0; // Ignore the simulated hover finger with index -42
 
         Debug.Log($"Handle Touch for {list.Count} Fingers");
@@ -74,6 +76,8 @@ public class CameraController : MonoBehaviour
 
     void HandleTouchPan(List<LeanFinger> fingers)
     {
+        if (LeanTouch.GuiInUse) return;
+
         if (LeanGesture.GetScreenDelta(fingers) == Vector2.zero) return;
 
         Vector2 delta = LeanGesture.GetScreenDelta(fingers);

@@ -1,18 +1,18 @@
 using Lean.Touch;
+using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Splines;
 
-[RequireComponent(typeof(HexGrid))]
 public class TilePlacer : MonoBehaviour
 {
     const string RESOURCE_FOLDER = "TilePrefabs/";
     GameObject[] tilePrefabs;
 
-    private HexGrid hexGrid;
+    [SerializeField] private HexGrid hexGrid;
     GameObject RndTilePrefab => tilePrefabs[Random.Range(0, tilePrefabs.Length)];
 
     [SerializeField] HexRaycaster raycaster;
     private Tile currentTile;
+    public Tile CurrentTile => currentTile;
     [SerializeField] private Transform tilesHolder;
     [SerializeField] private Material highlightMaterial;
     [SerializeField] private Material invalidMaterial;
@@ -27,7 +27,7 @@ public class TilePlacer : MonoBehaviour
         hexGrid = GetComponent<HexGrid>();
         currentTile = SpawnTile(Vector3.zero);
 
-        LeanTouch.OnFingerTap += TryPlaceTileByTouch;
+        LeanTouch.OnFingerTap += Touch_TryPlaceTile;
     }
 
     private void Update()
@@ -116,27 +116,40 @@ public class TilePlacer : MonoBehaviour
         if (scroll != 0)
         {
             float rotationAngle = scroll > 0 ? 60f : -60f;
-            currentTile.Rotate(rotationAngle);
-
-            var hexPosition = raycaster.HexPosition;
-            if ((!hexGrid.HasNeighbours(hexPosition) || hexGrid.IsPositionOccupied(hexPosition)))
-            {
-                currentTile.Rotate(-rotationAngle);
-            }
+            RotateTile(rotationAngle);
         }
+    }
+
+    private void RotateTile(float rotationAngle)
+    {
+        currentTile.Rotate(rotationAngle);
+
+        var hexPosition = raycaster.HexPosition;
+        if ((!hexGrid.HasNeighbours(hexPosition) || hexGrid.IsPositionOccupied(hexPosition)))
+        {
+            currentTile.Rotate(-rotationAngle);
+        }
+    }
+
+    public void Button_Rotate()
+    {
+        if (currentTile == null || !currentTile.gameObject.activeSelf)
+            return;
+
+        RotateTile(60f);
     }
 
     private Tile SpawnTile(Vector3 worldPosition) => Instantiate(RndTilePrefab, worldPosition, Quaternion.identity).GetComponent<Tile>();
 
-    private void TryPlaceTileByTouch(LeanFinger finger)
+    private void Touch_TryPlaceTile(LeanFinger finger)
     {
+        if (LeanTouch.GuiInUse) return;
+
         var hexPosition = raycaster.HexPosition;
 
-        var screenPos = finger.ScreenPosition;
-        if ((Vector2)raycaster.ScreenPosition == screenPos)
-        {
-            TryPlaceTile(currentTile, hexPosition);
-        }
+        //TODO check if tap hit current tile
+        TryPlaceTile(currentTile, hexPosition);
+
     }
 
     private bool TryPlaceTile(Tile tile, Hex hex)
@@ -145,7 +158,7 @@ public class TilePlacer : MonoBehaviour
 
         Vector3 worldPosition = hexGrid.HexToWorld(hex);
 
-        tile.Place(hex, worldPosition, transform);
+        tile.TryPlace(hex, worldPosition, transform);
 
         // Spawn next Tile
         currentTile = SpawnTile(worldPosition);

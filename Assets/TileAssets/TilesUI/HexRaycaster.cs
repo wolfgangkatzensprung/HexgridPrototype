@@ -29,6 +29,8 @@ public class HexRaycaster : MonoBehaviour
     private Ray CalculateRay()
     {
 #if UNITY_ANDROID
+        if (LeanTouch.GuiInUse) return this.ray;
+
         screenPosition = LeanTouch.Fingers.Count > 0 ?
             LeanTouch.Fingers[0].LastScreenPosition :
             screenPosition;

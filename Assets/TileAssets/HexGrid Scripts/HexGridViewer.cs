@@ -7,8 +7,6 @@ public class HexGridViewer : MonoBehaviour
 {
     [SerializeField] private bool showHexNumbers = true; // Toggle for hex number display
 
-    [SerializeField] private HexRaycaster raycaster;
-
     [SerializeField] private HexGrid hexGrid;
 
     private void Start()

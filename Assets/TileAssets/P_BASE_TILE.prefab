@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e2a9669efe00e42af83d729eacf87b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotateButton: {fileID: 0}
   Edges:
   - Type: 0
     Region: 0
@@ -188,7 +189,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 290581811305851880, guid: d3dbefdd816b79f4faa028aa6b0f8532, type: 3}
       propertyPath: m_Name
-      value: Text_Coordinates
+      value: Text_Coordinates_WS
       objectReference: {fileID: 0}
     - target: {fileID: 3684251818419196224, guid: d3dbefdd816b79f4faa028aa6b0f8532, type: 3}
       propertyPath: m_text

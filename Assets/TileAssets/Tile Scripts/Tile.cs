@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.UI;
 
 public class Tile : MonoBehaviour
 {
@@ -55,10 +56,13 @@ public class Tile : MonoBehaviour
     /// <param name="worldPosition">Transform Coordinates</param>
     /// <param name="parent">Tiles Holder</param>
     /// <param name="defaultMaterial">Material to switch to, when placed</param>
-    public void Place(Hex hex, Vector3 worldPosition, Transform parent)
+    public bool TryPlace(Hex hex, Vector3 worldPosition, Transform parent)
     {
         hexGrid = FindAnyObjectByType<HexGrid>();
         text = GetComponentInChildren<TMP_Text>();
+
+        if (hexGrid.TilesByHex.ContainsKey(hex)) return false;
+        hexGrid.AddTile(hex, this);
 
         this.hexPosition = hex;
 
@@ -67,7 +71,6 @@ public class Tile : MonoBehaviour
 
         ResetMaterials();
 
-        hexGrid.AddTile(hex, this);
 
         for (int i = 0; i < Edges.Length; i++)
         {
@@ -79,6 +82,8 @@ public class Tile : MonoBehaviour
         {
             Game.Instance.Score += 100 * neighbourCount;
         }
+
+        return true;
     }
 
     private void ResetMaterials()
