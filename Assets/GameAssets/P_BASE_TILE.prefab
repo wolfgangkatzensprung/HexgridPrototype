@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30e2a9669efe00e42af83d729eacf87b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  builderData: {fileID: 11400000, guid: 42392e893c0162e4aa5e8a3ce3e579fe, type: 2}
   Edges:
   - Type: 0
     Region: 0
@@ -356,10 +357,6 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: -7511558181221131132, guid: 47ab5c65192a70742a8bc0d87f8fec7b, type: 3}
-      propertyPath: 'm_Materials.Array.data[6]'
-      value: 
-      objectReference: {fileID: 2100000, guid: ea94bc05f4e812349a43dff1264c21ec, type: 2}
     - target: {fileID: 919132149155446097, guid: 47ab5c65192a70742a8bc0d87f8fec7b, type: 3}
       propertyPath: m_Name
       value: HexTile

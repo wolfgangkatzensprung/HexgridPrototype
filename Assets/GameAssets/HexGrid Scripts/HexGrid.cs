@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System;
 using System.Linq;
 
 public struct Orientation
@@ -64,15 +63,6 @@ public class HexGrid : MonoBehaviour
     {
         tilesByHex.Add(hex, tile);
     }
-
-    private void Update()
-    {
-        foreach(var key in tilesByHex.Keys)
-        {
-            Debug.Log($"{key} is in the list with tile {tilesByHex[key]}");
-        }
-    }
-
 
     #region HexGrid Utility
 
