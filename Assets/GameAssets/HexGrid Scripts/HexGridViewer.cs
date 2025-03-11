@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections.Generic;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -9,9 +11,13 @@ public class HexGridViewer : MonoBehaviour
 
     [SerializeField] private HexGrid hexGrid;
 
+    private List<Hex> gridCells = new List<Hex>();
+
     private void Start()
     {
         hexGrid = GetComponent<HexGrid>();
+
+        //TODO if needed: init gridCells to view the grid
     }
 
     private void DrawHexagon(Vector3 center, float size)
@@ -32,7 +38,7 @@ public class HexGridViewer : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        foreach (var hex in hexGrid.GridCells)
+        foreach (var hex in gridCells)
         {
             Vector3 worldPos = hexGrid.HexToWorld(hex);
             Gizmos.color = Color.white;

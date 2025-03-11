@@ -50,18 +50,23 @@ public class Tile : MonoBehaviour
 
 
     /// <summary>
-    /// Setup the Tile
+    /// Try Setup and place the Tile
     /// </summary>
     /// <param name="hex">Hex Coordinates</param>
     /// <param name="worldPosition">Transform Coordinates</param>
     /// <param name="parent">Tiles Holder</param>
     /// <param name="defaultMaterial">Material to switch to, when placed</param>
-    public bool TryPlace(Hex hex, Transform parent)
+    public bool TryPlace(Hex hex, Transform parent, HexGrid hexGrid)
     {
-        hexGrid = FindAnyObjectByType<HexGrid>();
-        text = GetComponentInChildren<TMP_Text>();
+        Debug.Log($"Try place Tile {hex}");
 
-        if (hexGrid.TilesByHex.ContainsKey(hex)) return false;
+        text = GetComponentInChildren<TMP_Text>();
+        this.hexGrid = hexGrid;
+
+        if (hexGrid.IsPositionOccupied(hex)) return false;
+        Debug.Log($"Tile pos is not occupied");
+        if (!hexGrid.HasNeighbours(hex)) return false;
+
         hexGrid.AddTile(hex, this);
 
         this.hexPosition = hex;

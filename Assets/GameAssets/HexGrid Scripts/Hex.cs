@@ -32,7 +32,7 @@ public struct Hex
     public override string ToString()
     {
         var s = $"({Q}, {R}, {S})";
-        return s;
+        return base.ToString() + s;
     }
 
     public static Hex Round(float q, float r)

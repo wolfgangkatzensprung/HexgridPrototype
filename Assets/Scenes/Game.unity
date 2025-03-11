@@ -871,6 +871,7 @@ MonoBehaviour:
   tilesHolder: {fileID: 1668126679}
   highlightMaterial: {fileID: 2100000, guid: bfdde985072688247aba16ffda7ee9bf, type: 2}
   invalidMaterial: {fileID: 2100000, guid: a80bd4d41ca1a594a9f57d15a4748a7c, type: 2}
+  startTile: {fileID: 1314138237642867443, guid: b648f99cf26293546a0fe9aad5c9dc55, type: 3}
 --- !u!114 &959185414
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -883,13 +884,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0073f0be305c1b41b422eb2a1d055a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: tilesByHex
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[Hex, Assembly-CSharp],[Tile,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.ObjectEqualityComparer`1[[Hex, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   gridWidth: 10
   gridHeight: 10
   hexSize: 1
   tileLayer:
     serializedVersion: 2
-    m_Bits: 0
-  layoutOrigin: {x: 0, y: 0, z: 0}
+    m_Bits: 64
 --- !u!4 &959185415
 Transform:
   m_ObjectHideFlags: 0
@@ -1751,13 +1780,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0073f0be305c1b41b422eb2a1d055a7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serializationData:
+    SerializedFormat: 2
+    SerializedBytes: 
+    ReferencedUnityObjects: []
+    SerializedBytesString: 
+    Prefab: {fileID: 0}
+    PrefabModificationsReferencedUnityObjects: []
+    PrefabModifications: []
+    SerializationNodes:
+    - Name: tilesByHex
+      Entry: 7
+      Data: 0|System.Collections.Generic.Dictionary`2[[Hex, Assembly-CSharp],[Tile,
+        Assembly-CSharp]], mscorlib
+    - Name: comparer
+      Entry: 7
+      Data: 1|System.Collections.Generic.ObjectEqualityComparer`1[[Hex, Assembly-CSharp]],
+        mscorlib
+    - Name: 
+      Entry: 8
+      Data: 
+    - Name: 
+      Entry: 12
+      Data: 0
+    - Name: 
+      Entry: 13
+      Data: 
+    - Name: 
+      Entry: 8
+      Data: 
   gridWidth: 10
   gridHeight: 10
   hexSize: 1
   tileLayer:
     serializedVersion: 2
     m_Bits: 64
-  layoutOrigin: {x: 0, y: 0, z: 0}
 --- !u!114 &1668126682
 MonoBehaviour:
   m_ObjectHideFlags: 0

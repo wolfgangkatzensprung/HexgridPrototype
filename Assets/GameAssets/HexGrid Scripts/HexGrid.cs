@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Sirenix.OdinInspector;
 
 public struct Orientation
 {
@@ -22,7 +23,7 @@ public struct Orientation
     }
 }
 
-public class HexGrid : MonoBehaviour
+public class HexGrid : SerializedMonoBehaviour
 {
     [SerializeField] private int gridWidth = 10;
     [SerializeField] private int gridHeight = 10;
@@ -44,27 +45,16 @@ public class HexGrid : MonoBehaviour
             b3: 2.0f / 3.0f,
             startAngle: 0.0f
         );
-    public Orientation Layout => layoutFlatTop;
 
-    [SerializeField] private Vector3 layoutOrigin = Vector3.zero;  // Origin (center) of the grid
-    public Vector3 Origin => layoutOrigin;
-
-    private List<Hex> gridCells = new List<Hex>();
-
-    private Dictionary<Hex, Tile> tilesByHex = new();
-    public Dictionary<Hex, Tile> TilesByHex => tilesByHex;
-
-    public List<Hex> GridCells => gridCells;
+    public Dictionary<Hex, Tile> tilesByHex;
 
     public List<Hex> OccupiedHexPositions => new List<Hex>(tilesByHex.Keys);
 
-
     public void AddTile(Hex hex, Tile tile)
     {
+        Debug.Log($"Tile added: {tile} on {hex}");
         tilesByHex.Add(hex, tile);
     }
-
-    #region HexGrid Utility
 
     public Vector3 HexToWorld(Hex hex)
     {
@@ -102,7 +92,7 @@ public class HexGrid : MonoBehaviour
     /// </summary>
     public bool HasNeighbours(Hex hex)
     {
-        var neighbors = GetAllNeighbours(hex);
+        var neighbors = HexUtils.GetAllNeighbours(hex);
         foreach (var neighbor in neighbors)
         {
             if (!IsPositionOccupied(neighbor))
@@ -110,24 +100,7 @@ public class HexGrid : MonoBehaviour
                 return true;
             }
         }
-        return false; // No neighbors available
-    }
-
-    /// <summary>
-    /// Get the neighbour hex positions of a given hex
-    /// </summary>
-    public Hex[] GetAllNeighbours(Hex hex)
-    {
-        var neighbors = new Hex[6];
-
-        for (int i = 0; i < neighbors.Length; i++)
-        {
-            var dir = HexUtils.Directions[i];
-            Hex neighbor = new Hex(hex.Q + dir.Q, hex.R + dir.R);
-            neighbors[i] = neighbor;
-        }
-
-        return neighbors;
+        return false;
     }
 
     /// <summary>
@@ -135,15 +108,39 @@ public class HexGrid : MonoBehaviour
     /// </summary>
     public Hex[] GetOccupiedNeighbours(Hex hex)
     {
-        return GetAllNeighbours(hex).Where(IsPositionOccupied).ToArray();
+        return HexUtils.GetAllNeighbours(hex).Where(IsPositionOccupied).ToArray();
     }
 
+    /// <summary>
+    /// Returns true when there is already a hex tile at that position
+    /// </summary>
     public bool IsPositionOccupied(Hex hexPosition)
     {
-        bool occupied = TilesByHex.ContainsKey(hexPosition);
-        Debug.Log($"Tiles List check for {hexPosition}. Already exits = {occupied}");
-        return occupied;
+        return tilesByHex.ContainsKey(hexPosition);
     }
 
-    #endregion
+    /// <summary>
+    /// Returns true when the edges of this tile match all neighbour edges
+    /// </summary>
+    public bool TileMatchesNeighbours(Hex hex, Tile tile)
+    {
+        foreach (var neighborHex in HexUtils.GetAllNeighbours(hex))
+        {
+            if (tilesByHex.TryGetValue(neighborHex, out var neighborTile))
+            {
+                int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex);
+
+                if (!tile.Matches(neighborTile, sharedEdge)) return false;
+            }
+        }
+        return true;
+    }
+
+    public bool CanBePlaced(Hex hexPosition, Tile tile)
+    {
+        if (!HasNeighbours(hexPosition)) return false;
+        if (IsPositionOccupied(hexPosition)) return false;
+
+        return TileMatchesNeighbours(hexPosition, tile);
+    }
 }

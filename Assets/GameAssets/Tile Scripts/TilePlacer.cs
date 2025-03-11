@@ -9,6 +9,8 @@ public class TilePlacer : MonoBehaviour
     [SerializeField] private Material highlightMaterial;
     [SerializeField] private Material invalidMaterial;
 
+    [SerializeField] private Tile startTile;
+
     private Tile currentTile;
 
     /// <summary>
@@ -18,54 +20,47 @@ public class TilePlacer : MonoBehaviour
 
     private void Start()
     {
-        hexGrid = GetComponent<HexGrid>();
         LeanTouch.OnFingerTap += Touch_TryPlaceTile;
+
+        Invoke(nameof(PlaceStartTile), 1f);
     }
+
+    private void PlaceStartTile()
+    {
+        var tileObject = Instantiate(startTile, tilesHolder);
+        var tile = tileObject.GetComponent<Tile>();
+
+        tile.TryPlace(new Hex(0, 0, 0), tilesHolder, hexGrid);
+    }
+
 
     private void Update()
     {
         if (currentTile == null) return;
 
-        UpdatePreviewTile();
         HandleRotation();
+        UpdatePreviewTile();
     }
 
     private void UpdatePreviewTile()
     {
-        var hexPosition = raycaster.HexPosition;
+        var hexPosition = raycaster.HitHexPosition;
+        
+        var canBePlaced = hexGrid.CanBePlaced(hexPosition, currentTile);
 
-        var occupied = hexGrid.IsPositionOccupied(hexPosition);
-        currentTile.gameObject.SetActive(!occupied);
+        var visible = !hexGrid.IsPositionOccupied(hexPosition);
+        currentTile.gameObject.SetActive(visible);
 
-        if (occupied) return;
+        if (!visible) return;
 
-        SnapToGrid();
-        bool canBePlaced = CanTileBePlaced(hexPosition, currentTile);
         currentTile.ApplyHighlightMaterialToBase(canBePlaced ? highlightMaterial : invalidMaterial);
+        SnapToGrid();
     }
 
     private void SnapToGrid()
     {
-        var worldPos = hexGrid.HexToWorld(raycaster.HexPosition);
+        var worldPos = hexGrid.HexToWorld(raycaster.HitHexPosition);
         currentTile.transform.position = worldPos;
-    }
-
-    private bool CanTileBePlaced(Hex hex, Tile tile)
-    {
-        return TileMatchesNeighbors(hex, tile);
-    }
-
-    private bool TileMatchesNeighbors(Hex hex, Tile tile)
-    {
-        foreach (var neighborHex in hexGrid.GetAllNeighbours(hex))
-        {
-            if (hexGrid.TilesByHex.TryGetValue(neighborHex, out var neighborTile))
-            {
-                int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex);
-                if (!tile.Matches(neighborTile, sharedEdge)) return false;
-            }
-        }
-        return true;
     }
 
     private void HandleRotation()
@@ -80,7 +75,7 @@ public class TilePlacer : MonoBehaviour
     {
         currentTile.Rotate(rotationAngle);
 
-        var hexPosition = raycaster.HexPosition;
+        var hexPosition = raycaster.HitHexPosition;
         if (!hexGrid.HasNeighbours(hexPosition) || hexGrid.IsPositionOccupied(hexPosition))
         {
             currentTile.Rotate(-rotationAngle);
@@ -98,14 +93,12 @@ public class TilePlacer : MonoBehaviour
     {
         if (LeanTouch.GuiInUse || currentTile == null) return;
 
-        TryPlaceTile(currentTile, raycaster.HexPosition);
+        TryPlaceTile(currentTile, raycaster.HitHexPosition);
     }
 
     private bool TryPlaceTile(Tile tile, Hex hex)
     {
-        if (!CanTileBePlaced(hex, tile)) return false;
-
-        if (tile.TryPlace(hex, transform))
+        if (tile.TryPlace(hex, transform, hexGrid))
         {
             currentTile = null;
             FindAnyObjectByType<TileTray>().SpawnNextTile();
@@ -122,7 +115,7 @@ public class TilePlacer : MonoBehaviour
 
         if (currentTile != null)
         {
-            currentTile.transform.SetPositionAndRotation(raycaster.WorldPosition, Quaternion.identity);
+            currentTile.transform.SetPositionAndRotation(raycaster.HitWorldPosition, Quaternion.identity);
         }
     }
 }

@@ -10,9 +10,9 @@ public class HexRaycaster : MonoBehaviour
     public Vector3 ScreenPosition => screenPosition;
 
     private Vector3 worldPosition;
-    public Vector3 WorldPosition => worldPosition;
+    public Vector3 HitWorldPosition => worldPosition;
     private Hex hexPosition;
-    public Hex HexPosition => hexPosition;
+    public Hex HitHexPosition => hexPosition;
 
     private Ray ray;
 
@@ -28,15 +28,12 @@ public class HexRaycaster : MonoBehaviour
 
     private Ray CalculateRay()
     {
-#if UNITY_ANDROID
         if (LeanTouch.GuiInUse) return this.ray;
 
         screenPosition = LeanTouch.Fingers.Count > 0 ?
             LeanTouch.Fingers[0].LastScreenPosition :
             screenPosition;
-#else
-        screenPosition = Input.mousePosition;
-#endif
+
         screenPosition.z = Camera.main.nearClipPlane + 1;  // get in front of camera
         var ray = Camera.main.ScreenPointToRay(screenPosition);
         return ray;

@@ -42,4 +42,21 @@ public static class HexUtils
         int i = HexUtils.GetSharedEdgeIndex(self, neighbor);
         return GetDirection(i);
     }
+
+    /// <summary>
+    /// Get all neighbour hex positions of a given hex
+    /// </summary>
+    public static Hex[] GetAllNeighbours(Hex hex)
+    {
+        var neighbors = new Hex[6];
+
+        for (int i = 0; i < neighbors.Length; i++)
+        {
+            var dir = Directions[i];
+            Hex neighbor = new Hex(hex.Q + dir.Q, hex.R + dir.R);
+            neighbors[i] = neighbor;
+        }
+
+        return neighbors;
+    }
 }
