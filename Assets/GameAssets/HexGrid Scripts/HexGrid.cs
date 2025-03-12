@@ -25,8 +25,6 @@ public struct Orientation
 
 public class HexGrid : SerializedMonoBehaviour
 {
-    [SerializeField] private int gridWidth = 10;
-    [SerializeField] private int gridHeight = 10;
     [SerializeField] private float hexSize = 1f;
 
     [SerializeField] LayerMask tileLayer;
@@ -46,7 +44,7 @@ public class HexGrid : SerializedMonoBehaviour
             startAngle: 0.0f
         );
 
-    public Dictionary<Hex, Tile> tilesByHex;
+    public Dictionary<Hex, Tile> tilesByHex = new();
 
     public List<Hex> OccupiedHexPositions => new List<Hex>(tilesByHex.Keys);
 
@@ -95,7 +93,7 @@ public class HexGrid : SerializedMonoBehaviour
         var neighbors = HexUtils.GetAllNeighbours(hex);
         foreach (var neighbor in neighbors)
         {
-            if (!IsPositionOccupied(neighbor))
+            if (IsPositionOccupied(neighbor))
             {
                 return true;
             }
@@ -116,6 +114,7 @@ public class HexGrid : SerializedMonoBehaviour
     /// </summary>
     public bool IsPositionOccupied(Hex hexPosition)
     {
+        //Debug.Log($"Is {hexPosition} occupied = {tilesByHex.ContainsKey(hexPosition)}");
         return tilesByHex.ContainsKey(hexPosition);
     }
 
@@ -138,9 +137,10 @@ public class HexGrid : SerializedMonoBehaviour
 
     public bool CanBePlaced(Hex hexPosition, Tile tile)
     {
-        if (!HasNeighbours(hexPosition)) return false;
-        if (IsPositionOccupied(hexPosition)) return false;
-
-        return TileMatchesNeighbours(hexPosition, tile);
+        return
+            !IsPositionOccupied(hexPosition)
+            & HasNeighbours(hexPosition)
+            & TileMatchesNeighbours(hexPosition, tile);
     }
+
 }

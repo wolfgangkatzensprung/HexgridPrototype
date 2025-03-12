@@ -26,6 +26,22 @@ public class TileTray : MonoBehaviour
         Initialize();
     }
 
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Alpha1))
+        {
+            Button_SelectTileFromTray(0);
+        }
+        if (Input.GetKey(KeyCode.Alpha2))
+        {
+            Button_SelectTileFromTray(1);
+        }
+        if (Input.GetKey(KeyCode.Alpha3))
+        {
+            Button_SelectTileFromTray(2);
+        }
+    }
+
     public void Initialize()
     {
         for (int i = 0; i < MAX_TILES; i++) SpawnTileOnTray(i);
@@ -56,13 +72,16 @@ public class TileTray : MonoBehaviour
 
     public void Button_SelectTileFromTray(int index)
     {
-        Debug.Log($"{index} is {tilesOnTray[index]}");
+        var tile = tilesOnTray[index];
+
+        if (tile == null) return;
+
+        Debug.Log($"Tile {index} selected from TileTray: {tile}");
 
         var tilePlacer = FindAnyObjectByType<TilePlacer>();
         if (tilePlacer.CurrentTile != null)
         {
             PutTileBackOnTray(tilePlacer.CurrentTile);
-            tilePlacer.SetCurrentTile(null);
         }
         tilePlacer.SetCurrentTile(tilesOnTray[index]);
 

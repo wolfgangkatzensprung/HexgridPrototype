@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5914926712054854998}
   - component: {fileID: 1699549260020020942}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: P_BASE_TILE
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -74,7 +74,6 @@ GameObject:
   - component: {fileID: 2253698535034576924}
   - component: {fileID: 4196238711753002989}
   - component: {fileID: 350371936137468140}
-  - component: {fileID: 3610802867020246810}
   - component: {fileID: 3908590931395420944}
   m_Layer: 5
   m_Name: TileCanvas_WS
@@ -149,23 +148,6 @@ MonoBehaviour:
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
   m_PresetInfoIsWorld: 1
---- !u!114 &3610802867020246810
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7046752970135045989}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dc42784cf147c0c48a680349fa168899, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_IgnoreReversedGraphics: 1
-  m_BlockingObjects: 0
-  m_BlockingMask:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!114 &3908590931395420944
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -48,9 +48,8 @@ public class Tile : MonoBehaviour
         }
     }
 
-
     /// <summary>
-    /// Try Setup and place the Tile
+    /// Setup and place the Tile if it follows all tile placement rules
     /// </summary>
     /// <param name="hex">Hex Coordinates</param>
     /// <param name="worldPosition">Transform Coordinates</param>
@@ -58,18 +57,26 @@ public class Tile : MonoBehaviour
     /// <param name="defaultMaterial">Material to switch to, when placed</param>
     public bool TryPlace(Hex hex, Transform parent, HexGrid hexGrid)
     {
-        Debug.Log($"Try place Tile {hex}");
+        if (!hexGrid.CanBePlaced(hex, this)) return false;
 
-        text = GetComponentInChildren<TMP_Text>();
+        Setup(hex, hexGrid);
+
+        Place(hex, parent);
+
+        return true;
+    }
+
+    private void Setup(Hex hex, HexGrid hexGrid)
+    {
         this.hexGrid = hexGrid;
-
-        if (hexGrid.IsPositionOccupied(hex)) return false;
-        Debug.Log($"Tile pos is not occupied");
-        if (!hexGrid.HasNeighbours(hex)) return false;
-
-        hexGrid.AddTile(hex, this);
-
+        this.text = GetComponentInChildren<TMP_Text>();
         this.hexPosition = hex;
+    }
+    public void ForceSetup(Hex hex, HexGrid grid) => Setup(hex, grid);
+
+    public void Place(Hex hex, Transform parent)
+    {
+        hexGrid.AddTile(hex, this);
 
         Vector3 worldPosition = hexGrid.HexToWorld(hex);
         transform.position = worldPosition;
@@ -77,18 +84,11 @@ public class Tile : MonoBehaviour
 
         ResetMaterials();
 
-        for (int i = 0; i < Edges.Length; i++)
-        {
-            Debug.Log($"Edge{i} is {Edges[i].ToString()}");
-        }
-
         SetupCoordinatesText(hex);
         if (TrySetupScoreTexts(hex, 100, out int neighbourCount))
         {
             Game.Instance.Score += 100 * neighbourCount;
         }
-
-        return true;
     }
 
     public void ResetMaterials()
@@ -165,8 +165,8 @@ public class Tile : MonoBehaviour
         var otherEdgeIndex = (sharedEdgeIndex + other.CurrentRotation) % 6;
         Edge otherEdge = other.Edges[otherEdgeIndex]; // opposite edge
 
-        Debug.Log($"Shared Edge: {edgeIndex} is {thisEdge.ToString()}, Other Edge: {otherEdgeIndex} is {otherEdge.ToString()}");
-        Debug.Log($"Rotation: {CurrentRotation}, Other Rotation: {other.CurrentRotation}");
+        //Debug.Log($"Shared Edge: {edgeIndex} is {thisEdge.ToString()}, Other Edge: {otherEdgeIndex} is {otherEdge.ToString()}");
+        //Debug.Log($"Rotation: {CurrentRotation}, Other Rotation: {other.CurrentRotation}");
 
         return thisEdge.Type == otherEdge.Type;
     }

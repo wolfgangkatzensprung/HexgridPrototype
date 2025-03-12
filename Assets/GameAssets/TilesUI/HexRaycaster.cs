@@ -1,4 +1,6 @@
 using Lean.Touch;
+using Sirenix.OdinInspector;
+using Sirenix.Serialization;
 using UnityEngine;
 
 public class HexRaycaster : MonoBehaviour
@@ -10,6 +12,7 @@ public class HexRaycaster : MonoBehaviour
     public Vector3 ScreenPosition => screenPosition;
 
     private Vector3 worldPosition;
+    [ShowInInspector]
     public Vector3 HitWorldPosition => worldPosition;
     private Hex hexPosition;
     public Hex HitHexPosition => hexPosition;
@@ -23,16 +26,13 @@ public class HexRaycaster : MonoBehaviour
         {
             worldPosition = ray.GetPoint(distance);
             hexPosition = hexGrid.WorldToHex(worldPosition);
+            //Debug.Log($"Raycast hit {worldPosition} / {hexPosition}");
         }
     }
 
     private Ray CalculateRay()
     {
-        if (LeanTouch.GuiInUse) return this.ray;
-
-        screenPosition = LeanTouch.Fingers.Count > 0 ?
-            LeanTouch.Fingers[0].LastScreenPosition :
-            screenPosition;
+        screenPosition = LeanTouch.Fingers.Count > 0 ? LeanTouch.Fingers[0].ScreenPosition : screenPosition;
 
         screenPosition.z = Camera.main.nearClipPlane + 1;  // get in front of camera
         var ray = Camera.main.ScreenPointToRay(screenPosition);

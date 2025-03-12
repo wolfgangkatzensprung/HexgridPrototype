@@ -19,6 +19,18 @@ public struct Hex
         Debug.Assert(q + r + s == 0);
     }
 
+    public Hex(Vector2Int axialCoordinates) : this(axialCoordinates.x, axialCoordinates.y) { }
+
+    public static implicit operator Vector2Int(Hex hex)
+    {
+        return new Vector2Int(hex.Q, hex.R);
+    }
+
+    public static explicit operator Hex(Vector2Int v)
+    {
+        return new Hex(v.x, v.y);
+    }
+
     public static Hex operator +(Hex a, Hex b) => new Hex(a.Q + b.Q, a.R + b.R);
     public static Hex operator -(Hex a, Hex b) => new Hex(a.Q - b.Q, a.R - b.R);
     public static Hex operator *(Hex a, int k) => new Hex(a.Q * k, a.R * k, a.S * k);

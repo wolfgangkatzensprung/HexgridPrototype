@@ -1,5 +1,6 @@
 using Lean.Touch;
 using UnityEngine;
+using static CW.Common.CwInputManager;
 
 public class TilePlacer : MonoBehaviour
 {
@@ -11,26 +12,32 @@ public class TilePlacer : MonoBehaviour
 
     [SerializeField] private Tile startTile;
 
+    [SerializeField] private AudioSource placeSound;
+    [SerializeField] private AudioSource errorSound;
+
     private Tile currentTile;
 
     /// <summary>
-    /// Tile that has been selected from TileTray and is now on the board
+    /// Tile that has been selected from TileTray and is now the preview tile on the board
     /// </summary>
     public Tile CurrentTile => currentTile;
 
     private void Start()
     {
-        LeanTouch.OnFingerTap += Touch_TryPlaceTile;
+        LeanTouch.OnFingerTap += Touch_Tap;
+        LeanTouch.OnFingerUpdate += Touch_Update;
 
         Invoke(nameof(PlaceStartTile), 1f);
     }
 
     private void PlaceStartTile()
     {
-        var tileObject = Instantiate(startTile, tilesHolder);
-        var tile = tileObject.GetComponent<Tile>();
+        var tile = Instantiate(startTile, tilesHolder).GetComponent<Tile>();
 
-        tile.TryPlace(new Hex(0, 0, 0), tilesHolder, hexGrid);
+        var startHex = new Hex(0, 0, 0);
+
+        tile.ForceSetup(startHex, hexGrid);
+        tile.Place(startHex, tilesHolder);
     }
 
 
@@ -44,6 +51,8 @@ public class TilePlacer : MonoBehaviour
 
     private void UpdatePreviewTile()
     {
+        if (LeanTouch.GuiInUse) return;
+
         var hexPosition = raycaster.HitHexPosition;
         
         var canBePlaced = hexGrid.CanBePlaced(hexPosition, currentTile);
@@ -74,12 +83,6 @@ public class TilePlacer : MonoBehaviour
     private void RotateTile(float rotationAngle)
     {
         currentTile.Rotate(rotationAngle);
-
-        var hexPosition = raycaster.HitHexPosition;
-        if (!hexGrid.HasNeighbours(hexPosition) || hexGrid.IsPositionOccupied(hexPosition))
-        {
-            currentTile.Rotate(-rotationAngle);
-        }
     }
 
     public void Button_Rotate()
@@ -89,11 +92,25 @@ public class TilePlacer : MonoBehaviour
         RotateTile(60f);
     }
 
-    private void Touch_TryPlaceTile(LeanFinger finger)
+    private void Touch_Tap(LeanFinger finger)
     {
         if (LeanTouch.GuiInUse || currentTile == null) return;
 
-        TryPlaceTile(currentTile, raycaster.HitHexPosition);
+        if (TryPlaceTile(currentTile, raycaster.HitHexPosition))
+        {
+            placeSound.Play();
+        }
+        else
+        {
+            errorSound.Play();
+            Button_Rotate();
+        }
+    }
+
+    private void Touch_Update(LeanFinger finger)
+    {
+        var l = FindAnyObjectByType<LeanSelectByFinger>();
+        l.SelectScreenPosition(finger);
     }
 
     private bool TryPlaceTile(Tile tile, Hex hex)
@@ -111,11 +128,22 @@ public class TilePlacer : MonoBehaviour
 
     public void SetCurrentTile(Tile tile)
     {
+        Debug.Log($"Set Current Tile = {tile}");
         currentTile = tile;
 
         if (currentTile != null)
         {
             currentTile.transform.SetPositionAndRotation(raycaster.HitWorldPosition, Quaternion.identity);
+        }
+        else
+        {
+            Debug.Log($"Assigned null to {nameof(currentTile)}");
+        }
+
+        // Reset Fingers
+        foreach (var finger in LeanTouch.Fingers)
+        {
+            finger.StartedOverGui = false;
         }
     }
 }
