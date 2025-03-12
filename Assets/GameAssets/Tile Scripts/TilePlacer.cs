@@ -12,9 +12,6 @@ public class TilePlacer : MonoBehaviour
 
     [SerializeField] private Tile startTile;
 
-    [SerializeField] private AudioSource placeSound;
-    [SerializeField] private AudioSource errorSound;
-
     private Tile currentTile;
 
     /// <summary>
@@ -98,11 +95,11 @@ public class TilePlacer : MonoBehaviour
 
         if (TryPlaceTile(currentTile, raycaster.HitHexPosition))
         {
-            placeSound.Play();
+            AudioManager.Instance.PlaySound(AudioManager.SoundType.Place);
         }
         else
         {
-            errorSound.Play();
+            AudioManager.Instance.PlaySound(AudioManager.SoundType.Error);
             Button_Rotate();
         }
     }
