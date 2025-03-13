@@ -128,6 +128,7 @@ public class HexGrid : SerializedMonoBehaviour
             if (tilesByHex.TryGetValue(neighborHex, out var neighborTile))
             {
                 int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex);
+                Debug.Log($"Shared Edge: {sharedEdge} = {tile.Edges[sharedEdge]}");
 
                 if (!tile.Matches(neighborTile, sharedEdge)) return false;
             }

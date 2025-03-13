@@ -79,7 +79,7 @@ public class TilePlacer : MonoBehaviour
 
     private void RotateTile(float rotationAngle)
     {
-        currentTile.Rotate(rotationAngle);
+        currentTile.AddRotation(rotationAngle);
     }
 
     public void Button_Rotate()
@@ -97,7 +97,7 @@ public class TilePlacer : MonoBehaviour
         {
             AudioManager.Instance.PlaySound(AudioManager.SoundType.Place);
         }
-        else
+        else if (finger.Age < 1)
         {
             AudioManager.Instance.PlaySound(AudioManager.SoundType.Error);
             Button_Rotate();

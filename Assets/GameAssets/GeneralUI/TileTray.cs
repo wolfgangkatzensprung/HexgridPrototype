@@ -86,6 +86,8 @@ public class TileTray : MonoBehaviour
         tilePlacer.SetCurrentTile(tilesOnTray[index]);
 
         tilesOnTray[index] = null;
+
+        AudioManager.Instance.PlaySound(AudioManager.SoundType.Select);
     }
 
     private void PutTileBackOnTray(Tile currentTile)
@@ -96,6 +98,7 @@ public class TileTray : MonoBehaviour
             {
                 tilesOnTray[i] = currentTile;
                 currentTile.transform.SetPositionAndRotation(tileSpawnPoints[i].position, tileSpawnPoints[i].rotation);
+                currentTile.ResetRotation();
                 currentTile.ResetMaterials();
             }
         }

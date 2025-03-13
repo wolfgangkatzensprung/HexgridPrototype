@@ -2,6 +2,7 @@ using TMPro;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class Tile : MonoBehaviour
 {
@@ -146,10 +147,15 @@ public class Tile : MonoBehaviour
         return neighbourCount > 0;
     }
 
-    public void Rotate(float angle)
+    public void AddRotation(float angle)
     {
         transform.Rotate(0, angle, 0);
         CurrentRotation -= (int)Mathf.Sign(angle);
+    }
+
+    public void ResetRotation()
+    {
+        _currentRotation = 0;
     }
 
     private string ColorToHex(Color color)
@@ -165,8 +171,8 @@ public class Tile : MonoBehaviour
         var otherEdgeIndex = (sharedEdgeIndex + other.CurrentRotation) % 6;
         Edge otherEdge = other.Edges[otherEdgeIndex]; // opposite edge
 
-        //Debug.Log($"Shared Edge: {edgeIndex} is {thisEdge.ToString()}, Other Edge: {otherEdgeIndex} is {otherEdge.ToString()}");
-        //Debug.Log($"Rotation: {CurrentRotation}, Other Rotation: {other.CurrentRotation}");
+        Debug.Log($"Shared Edge: {edgeIndex} is {thisEdge.ToString()}, Other Edge: {otherEdgeIndex} is {otherEdge.ToString()}");
+        Debug.Log($"Rotation: {CurrentRotation}, Other Rotation: {other.CurrentRotation}");
 
         return thisEdge.Type == otherEdge.Type;
     }
