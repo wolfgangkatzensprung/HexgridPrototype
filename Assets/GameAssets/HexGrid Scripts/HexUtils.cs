@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public static class HexUtils
 {
@@ -25,6 +26,7 @@ public static class HexUtils
     public static int GetSharedEdgeIndex(Hex self, Hex neighbor)
     {
         var edgeDir = neighbor - self;
+        Debug.Log($"EdgeDir = {edgeDir} = Neighbor {neighbor} minus self {self}");
 
         for (int i = 0; i < directions.Length; i++)
         {

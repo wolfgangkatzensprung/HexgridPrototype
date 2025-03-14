@@ -1,6 +1,5 @@
 using Lean.Touch;
 using UnityEngine;
-using static CW.Common.CwInputManager;
 
 public class TilePlacer : MonoBehaviour
 {
@@ -34,7 +33,7 @@ public class TilePlacer : MonoBehaviour
         var startHex = new Hex(0, 0, 0);
 
         tile.ForceSetup(startHex, hexGrid);
-        tile.Place(startHex, tilesHolder);
+        tile.Place(startHex);
     }
 
 
@@ -112,10 +111,10 @@ public class TilePlacer : MonoBehaviour
 
     private bool TryPlaceTile(Tile tile, Hex hex)
     {
-        if (tile.TryPlace(hex, transform, hexGrid))
+        if (tile.TryPlace(hex, hexGrid))
         {
             currentTile = null;
-            FindAnyObjectByType<TileTray>().SpawnNextTile();
+            FindAnyObjectByType<TileTray>().NextTile();
             Debug.Log($"{tile} placed on {hex}");
             return true;
         }

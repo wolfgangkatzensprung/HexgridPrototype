@@ -1,11 +1,15 @@
 ﻿using UnityEngine;
 using System;
+using Unity.VisualScripting;
 /// <summary>
 /// This is a datastruct for Hexagons, similar to Vector3Int but more specific
 /// </summary>
+[Serializable, Inspectable]
 public struct Hex
 {
+    [Inspectable]
     public int Q { get; }   // Column
+    [Inspectable]
     public int R { get; }   // Row
     public int S { get; }   // zusaetzliche diagonale Axe
 

@@ -8,7 +8,7 @@ public class TileTray : MonoBehaviour
     [SerializeField] private Transform trayContainer; // UI Panel
     [SerializeField] private GameObject tilePreviewPrefab; // UI element with RawImage
     [SerializeField] private Camera tilePreviewCamera;
-
+    [SerializeField] private Transform tilesHolder;
     [SerializeField] private Transform[] tileSpawnPoints; // 3 possible spawn positions
     private Tile[] tilesOnTray = new Tile[3];
 
@@ -44,29 +44,43 @@ public class TileTray : MonoBehaviour
 
     public void Initialize()
     {
-        for (int i = 0; i < MAX_TILES; i++) SpawnTileOnTray(i);
+        for (int i = 0; i < MAX_TILES; i++) TrySpawnTileOnTray(i);
     }
 
-    private void SpawnTileOnTray(int index)
+    private bool TrySpawnTileOnTray(int index)
     {
+        if (!Game.Instance.HasTiles) return false;
+
         if (tilesOnTray[index] != null)
         {
+            Debug.LogWarning($"Tile spawn on already existing {tilesOnTray[index]} Tile in Tray");
             Destroy(tilesOnTray[index]);
         }
 
-        Tile tile = Instantiate(RndTilePrefab, tileSpawnPoints[index].position, tileSpawnPoints[index].rotation).GetComponent<Tile>();
+        Tile tile = Instantiate(RndTilePrefab, tileSpawnPoints[index].position, tileSpawnPoints[index].rotation, tilesHolder).GetComponent<Tile>();
         tilesOnTray[index] = tile;
+        return true;
     }
 
-    public void SpawnNextTile()
+    public void NextTile()
     {
         for (int i = 0; i < MAX_TILES; i++)
         {
             if (tilesOnTray[i] == null)
             {
-                SpawnTileOnTray(i);
+                var tileSpawned = TrySpawnTileOnTray(i);
+
+                if (tileSpawned)
+                {
+                    Game.Instance.TileCount--;
+                }
+                else
+                {
+                    Game.Instance.Restart();
+                }
+
                 return;
-            } 
+            }
         }
     }
 
