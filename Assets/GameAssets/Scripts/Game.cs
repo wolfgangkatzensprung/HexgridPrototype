@@ -1,3 +1,4 @@
+using PrimeTween;
 using Sirenix.OdinInspector;
 using System;
 using UnityEngine;
@@ -46,11 +47,17 @@ public class Game : Singleton<Game>
 
     public Action<int> ScoreGained;
 
+    private void Start()
+    {
+        PrimeTweenConfig.warnZeroDuration = false;
+    }
+
     public void Restart()
     {
+        Debug.Log($"Player lost with a score of {score}! Restarting ...");
         score = 0;
+        TileCount = TILES_AMOUNT;
         grid.ResetAll();
-        tileReserveCount = TILES_AMOUNT;
     }
 
     internal void ReceiveTileReward()

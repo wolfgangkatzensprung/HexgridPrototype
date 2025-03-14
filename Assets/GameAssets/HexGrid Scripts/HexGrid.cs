@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
+using System.Collections;
 
 public struct Orientation
 {
@@ -44,13 +45,13 @@ public class HexGrid : SerializedMonoBehaviour
             startAngle: 0.0f
         );
 
-    public Dictionary<Hex, Tile> tilesByHex = new();
+    private Dictionary<Hex, Tile> tilesByHex = new();
+    public Dictionary<Hex, Tile> Board => tilesByHex;
 
     public List<Hex> OccupiedHexPositions => new List<Hex>(tilesByHex.Keys);
 
     public void AddTile(Hex hex, Tile tile)
     {
-        Debug.Log($"Tile added: {tile} on {hex}");
         tilesByHex.Add(hex, tile);
     }
 
@@ -127,7 +128,7 @@ public class HexGrid : SerializedMonoBehaviour
         {
             if (tilesByHex.TryGetValue(neighborHex, out var neighborTile))
             {
-                int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex);
+                int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex, tile.CurrentRotation);
                 //Debug.Log($"Shared Edge: {sharedEdge} = {tile.Edges[sharedEdge]}");
 
                 if (!tile.Matches(neighborTile, sharedEdge)) return false;
@@ -144,11 +145,18 @@ public class HexGrid : SerializedMonoBehaviour
             & TileMatchesNeighbours(hexPosition, tile);
     }
 
-    internal void ResetAll()
+    public void ResetAll()
     {
         tilesByHex.Clear();
+
+        StartCoroutine(DeleteTilesRoutine());
+    }
+
+    private IEnumerator DeleteTilesRoutine()
+    {
         foreach (Transform c in transform)
         {
+            yield return new WaitForSeconds(.1f);
             Destroy(c.gameObject);
         }
     }

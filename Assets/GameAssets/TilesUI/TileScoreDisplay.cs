@@ -15,6 +15,7 @@ public class TileScoreDisplay : MonoBehaviour
 
         foreach (var edge in edgeScores)
         {
+
             Tween.Delay(delay, () =>
             {
                 GameObject textObj = Instantiate(scoreTextPrefab, transform);

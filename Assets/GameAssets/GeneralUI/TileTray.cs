@@ -4,6 +4,7 @@ public class TileTray : MonoBehaviour
 {
     const int MAX_TILES = 3;
     const string RESOURCE_FOLDER = "TilePrefabs/";
+    const string STAGE_1 = "Stage1/";
 
     [SerializeField] private Transform trayContainer; // UI Panel
     [SerializeField] private GameObject tilePreviewPrefab; // UI element with RawImage
@@ -18,7 +19,8 @@ public class TileTray : MonoBehaviour
 
     private void Awake()
     {
-        tilePrefabs = Resources.LoadAll<GameObject>(RESOURCE_FOLDER);
+        var folderToLoad = RESOURCE_FOLDER + STAGE_1;
+        tilePrefabs = Resources.LoadAll<GameObject>(folderToLoad);
     }
 
     private void Start()
@@ -58,6 +60,7 @@ public class TileTray : MonoBehaviour
         }
 
         Tile tile = Instantiate(RndTilePrefab, tileSpawnPoints[index].position, tileSpawnPoints[index].rotation, tilesHolder).GetComponent<Tile>();
+        tile.transform.SetParent(transform);
         tilesOnTray[index] = tile;
         return true;
     }
@@ -90,14 +93,13 @@ public class TileTray : MonoBehaviour
 
         if (tile == null) return;
 
-        Debug.Log($"Tile {index} selected from TileTray: {tile}");
-
         var tilePlacer = FindAnyObjectByType<TilePlacer>();
         if (tilePlacer.CurrentTile != null)
         {
             PutTileBackOnTray(tilePlacer.CurrentTile);
         }
-        tilePlacer.SetCurrentTile(tilesOnTray[index]);
+        tilePlacer.SetCurrentTile(tile);
+        tile.transform.SetParent(FindAnyObjectByType<HexGrid>().transform);
 
         tilesOnTray[index] = null;
 

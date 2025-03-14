@@ -23,25 +23,26 @@ public static class HexUtils
 
     public static Hex GetNeighbour(Hex hex, int direction) => hex + directions[direction];
 
-    public static int GetSharedEdgeIndex(Hex self, Hex neighbor)
+    public static int GetSharedEdgeIndex(Hex self, Hex neighbor, int selfRotation)
     {
         var edgeDir = neighbor - self;
-        Debug.Log($"EdgeDir = {edgeDir} = Neighbor {neighbor} minus self {self}");
 
         for (int i = 0; i < directions.Length; i++)
         {
-            if (edgeDir == directions[i])
+            int rotatedIndex = (i + selfRotation) % directions.Length;
+
+            if (edgeDir == directions[rotatedIndex])
             {
-                return i;
+                return rotatedIndex;
             }
         }
 
         return -1;  // invalid
     }
 
-    public static Hex GetDirectionToNeighbor(Hex self, Hex neighbor)
+    public static Hex GetDirectionToNeighbor(Hex self, Hex neighbor, int selfRotation)
     {
-        int i = HexUtils.GetSharedEdgeIndex(self, neighbor);
+        int i = GetSharedEdgeIndex(self, neighbor, selfRotation);
         return GetDirection(i);
     }
 

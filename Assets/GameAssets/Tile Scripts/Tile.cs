@@ -90,12 +90,20 @@ public class Tile : MonoBehaviour
             Game.Instance.Score += 100 * neighbourCount;
         }
 
+        CheckForCompletion();
+    }
+
+    private void CheckForCompletion()
+    {
         var neighborsHex = hexGrid.GetOccupiedNeighbours(hex);
 
         foreach (var nHex in neighborsHex)
         {
-            int edgeIndex = HexUtils.GetSharedEdgeIndex(this.hex, nHex);
-            if (IsAreaCompleted(hexGrid.tilesByHex, Edges[edgeIndex].Type))
+            int edgeIndex = HexUtils.GetSharedEdgeIndex(hex, nHex, CurrentRotation);
+
+            Debug.Log($"{nHex} is neighbour of {hex}. Shared edge index is {edgeIndex} and current rotation is {CurrentRotation}");
+
+            if (Level.Instance.IsAreaCompleted(hex, Edges[edgeIndex].Type))
             {
                 Debug.Log($"Area completed! - {Edges[edgeIndex].Type}");
                 Game.Instance.ReceiveTileReward();
@@ -145,7 +153,7 @@ public class Tile : MonoBehaviour
         neighbourCount = neighbours.Length;
         foreach (var neighbor in neighbours)
         {
-            var dir = HexUtils.GetDirectionToNeighbor(hex, neighbor);
+            var dir = HexUtils.GetDirectionToNeighbor(hex, neighbor, CurrentRotation);
             var edgePosition = (FractionalHex)hex + (FractionalHex)dir * Mathf.Sqrt(3f) * .5f;
             var offset = (FractionalHex)dir * -0.2f; // slight offset inwards
             var textPosition = hexGrid.FractionalHexToWorld(edgePosition + offset);
@@ -186,44 +194,5 @@ public class Tile : MonoBehaviour
         //Debug.Log($"Rotation: {CurrentRotation}, Other Rotation: {other.CurrentRotation}");
 
         return thisEdge.Type == otherEdge.Type;
-    }
-
-    // TODO: Find a better way. 
-    public bool IsAreaCompleted(Dictionary<Hex, Tile> board, EdgeType type)
-    {
-        if (!board.ContainsKey(hex)) return false;
-
-        HashSet<Hex> visited = new();
-        Queue<Hex> toVisit = new();
-        toVisit.Enqueue(hex);
-
-        while (toVisit.Count > 0)
-        {
-            Hex currentHex = toVisit.Dequeue();
-
-            if (visited.Contains(currentHex)) continue;
-            visited.Add(currentHex);
-
-            var neighborHexes = hexGrid.GetOccupiedNeighbours(hex);
-
-            foreach(var neighborHex in neighborHexes)
-            {
-                if (!board.ContainsKey(neighborHex)) continue;
-                if (currentHex == neighborHex) continue;
-
-                Tile neighbor = board[neighborHex];
-
-                var sharedEdgeIndex = HexUtils.GetSharedEdgeIndex(currentHex, neighborHex);
-
-                if (neighbor.Edges[sharedEdgeIndex].Type != type) return false;
-
-                if (!visited.Contains(neighborHex))
-                {
-                    toVisit.Enqueue(neighborHex); 
-                }
-
-            }
-        }
-        return true;
     }
 }

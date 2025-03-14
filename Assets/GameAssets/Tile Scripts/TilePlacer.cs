@@ -124,7 +124,6 @@ public class TilePlacer : MonoBehaviour
 
     public void SetCurrentTile(Tile tile)
     {
-        Debug.Log($"Set Current Tile = {tile}");
         currentTile = tile;
 
         if (currentTile != null)
