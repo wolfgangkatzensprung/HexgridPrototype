@@ -34,7 +34,7 @@ public class Level : Singleton<Level>
                 Tile tile = hexGrid.Board[currentHex];
                 Tile neighborTile = hexGrid.Board[neighborHex];
 
-                var sharedEdgeIndex = HexUtils.GetSharedEdgeIndex(currentHex, neighborHex, tile.CurrentRotation);
+                var sharedEdgeIndex = HexUtils.GetSharedEdgeIndex(currentHex, neighborHex);
 
                 if (neighborTile.Edges[sharedEdgeIndex].Type != type) return false;
 

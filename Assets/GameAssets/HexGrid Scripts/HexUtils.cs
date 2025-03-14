@@ -9,13 +9,23 @@ public static class HexUtils
 
     private static Hex[] directions = new Hex[6]
     {
-        new Hex(0, -1, +1), // top 
-        new Hex(-1, 0, +1), 
-        new Hex(-1, +1, 0), 
-        new Hex(0, +1, -1), // bottom
-        new Hex(+1, 0, -1), 
-        new Hex(+1, -1, 0)  
+        new Hex(0, +1, -1), // top
+        new Hex(+1, 0, -1),
+        new Hex(+1, -1, 0),
+        new Hex(0, -1, +1), // bottom 
+        new Hex(-1, 0, +1),
+        new Hex(-1, +1, 0),
     };
+
+    public enum DirectionType
+    {
+        Top = 0,
+        TopRight = 1,
+        BottomRight = 2,
+        Bottom = 3,
+        BottomLeft = 4,
+        TopLeft = 5
+    }
 
     public static Hex[] Directions => directions;
 
@@ -23,26 +33,25 @@ public static class HexUtils
 
     public static Hex GetNeighbour(Hex hex, int direction) => hex + directions[direction];
 
-    public static int GetSharedEdgeIndex(Hex self, Hex neighbor, int selfRotation)
+    public static int GetSharedEdgeIndex(Hex self, Hex neighbor)
     {
         var edgeDir = neighbor - self;
 
         for (int i = 0; i < directions.Length; i++)
         {
-            int rotatedIndex = (i + selfRotation) % directions.Length;
-
-            if (edgeDir == directions[rotatedIndex])
+            if (edgeDir == directions[i])
             {
-                return rotatedIndex;
+                return i;
             }
         }
 
+        Debug.LogError($"Invalid Shared Edge for {self} and {neighbor}");
         return -1;  // invalid
     }
 
-    public static Hex GetDirectionToNeighbor(Hex self, Hex neighbor, int selfRotation)
+    public static Hex GetDirectionToNeighbor(Hex self, Hex neighbor)
     {
-        int i = GetSharedEdgeIndex(self, neighbor, selfRotation);
+        int i = GetSharedEdgeIndex(self, neighbor);
         return GetDirection(i);
     }
 

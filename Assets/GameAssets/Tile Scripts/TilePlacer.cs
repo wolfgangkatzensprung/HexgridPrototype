@@ -1,5 +1,6 @@
 using Lean.Touch;
 using UnityEngine;
+using static HexUtils;
 
 public class TilePlacer : MonoBehaviour
 {
@@ -111,11 +112,12 @@ public class TilePlacer : MonoBehaviour
 
     private bool TryPlaceTile(Tile tile, Hex hex)
     {
+        Debug.Log($"Try Place {tile} on {hex} with rotation {tile.CurrentRotation}.");
         if (tile.TryPlace(hex, hexGrid))
         {
             currentTile = null;
             FindAnyObjectByType<TileTray>().NextTile();
-            Debug.Log($"{tile} placed on {hex}");
+            Debug.Log($"{tile} has been placed on {hex}");
             return true;
         }
 

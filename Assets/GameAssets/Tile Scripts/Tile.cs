@@ -99,13 +99,15 @@ public class Tile : MonoBehaviour
 
         foreach (var nHex in neighborsHex)
         {
-            int edgeIndex = HexUtils.GetSharedEdgeIndex(hex, nHex, CurrentRotation);
+            int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, nHex);
+            int rotatedEdge = (sharedEdge + CurrentRotation) % 6;
+            var edgeType = Edges[rotatedEdge].Type;
 
-            Debug.Log($"{nHex} is neighbour of {hex}. Shared edge index is {edgeIndex} and current rotation is {CurrentRotation}");
+            Debug.Log($"{nHex} is neighbour of {hex}. Shared edge index is {sharedEdge}. So due to current rotation {CurrentRotation}, edge {rotatedEdge} is matching {edgeType}");
 
-            if (Level.Instance.IsAreaCompleted(hex, Edges[edgeIndex].Type))
+            if (Level.Instance.IsAreaCompleted(hex, edgeType))
             {
-                Debug.Log($"Area completed! - {Edges[edgeIndex].Type}");
+                Debug.Log($"Area completed! - {edgeType}");
                 Game.Instance.ReceiveTileReward();
             }
         }
@@ -153,7 +155,7 @@ public class Tile : MonoBehaviour
         neighbourCount = neighbours.Length;
         foreach (var neighbor in neighbours)
         {
-            var dir = HexUtils.GetDirectionToNeighbor(hex, neighbor, CurrentRotation);
+            var dir = HexUtils.GetDirectionToNeighbor(hex, neighbor);
             var edgePosition = (FractionalHex)hex + (FractionalHex)dir * Mathf.Sqrt(3f) * .5f;
             var offset = (FractionalHex)dir * -0.2f; // slight offset inwards
             var textPosition = hexGrid.FractionalHexToWorld(edgePosition + offset);
@@ -184,15 +186,12 @@ public class Tile : MonoBehaviour
 
     public bool Matches(Tile other, int sharedEdgeIndex)
     {
-        var edgeIndex = (sharedEdgeIndex + CurrentRotation + 3) % 6;
+        int edgeIndex = (sharedEdgeIndex + CurrentRotation) % 6;
         Edge thisEdge = this.Edges[edgeIndex];
 
-        var otherEdgeIndex = (sharedEdgeIndex + other.CurrentRotation) % 6;
-        Edge otherEdge = other.Edges[otherEdgeIndex]; // opposite edge
-
-        //Debug.Log($"Shared Edge: {edgeIndex} is {thisEdge.ToString()}, Other Edge: {otherEdgeIndex} is {otherEdge.ToString()}");
-        //Debug.Log($"Rotation: {CurrentRotation}, Other Rotation: {other.CurrentRotation}");
-
+        int otherEdgeIndex = (sharedEdgeIndex + 3 + other.CurrentRotation) % 6; // opposite edge
+        Edge otherEdge = other.Edges[otherEdgeIndex];
         return thisEdge.Type == otherEdge.Type;
     }
+
 }

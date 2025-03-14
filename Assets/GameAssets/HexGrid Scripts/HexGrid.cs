@@ -74,9 +74,8 @@ public class HexGrid : SerializedMonoBehaviour
     public Hex WorldToHex(Vector3 worldPosition)
     {
         float x = worldPosition.x / (hexSize * 3f / 2f);
-        float z = worldPosition.z / (hexSize * Mathf.Sqrt(3f)); // Full axial system scaling for z
+        float z = worldPosition.z / (hexSize * Mathf.Sqrt(3f));
 
-        // Adjust z position considering the offset caused by the "odd-r" or "even-r" skewing.
         float adjustedZ = z - (x / 2f);
 
         int q = Mathf.RoundToInt(x);
@@ -128,7 +127,7 @@ public class HexGrid : SerializedMonoBehaviour
         {
             if (tilesByHex.TryGetValue(neighborHex, out var neighborTile))
             {
-                int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex, tile.CurrentRotation);
+                int sharedEdge = HexUtils.GetSharedEdgeIndex(hex, neighborHex);
                 //Debug.Log($"Shared Edge: {sharedEdge} = {tile.Edges[sharedEdge]}");
 
                 if (!tile.Matches(neighborTile, sharedEdge)) return false;
