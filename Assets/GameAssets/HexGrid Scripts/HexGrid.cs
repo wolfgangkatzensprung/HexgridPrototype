@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using System.Collections;
+using System;
 
 public struct Orientation
 {
@@ -158,5 +159,14 @@ public class HexGrid : SerializedMonoBehaviour
             yield return new WaitForSeconds(.1f);
             Destroy(c.gameObject);
         }
+    }
+
+    internal Tile GetTile(Hex position) => tilesByHex[position];
+
+    internal bool HasTile(Hex hex) => Board.ContainsKey(hex);
+
+    internal List<Tile> GetAllTiles()
+    {
+        return GetComponentsInChildren<Tile>().ToList();
     }
 }

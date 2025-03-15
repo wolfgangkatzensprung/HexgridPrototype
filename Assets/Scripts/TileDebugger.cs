@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using static HexUtils;
 
-public class TileDebugger : MonoBehaviour
+public class TileDebugger : Singleton<TileDebugger>
 {
     [SerializeField] TMP_Text debugText;
 
@@ -27,9 +27,9 @@ public class TileDebugger : MonoBehaviour
             string edgeType = edge.Type.ToString();
 
             Hex direction = Directions[i];
-            DirectionType directionEnum = (DirectionType)i;
+            DirectionType dir = (DirectionType)((i + currentTile.CurrentRotation) % 6);
 
-            debugInfo += $"{directionEnum} ({i}) is {edgeType}, Direction: {direction}\n";
+            debugInfo += $"{dir} ({i}) is {edgeType}, Direction: {direction}\n";
         }
 
         debugText.text = debugInfo;

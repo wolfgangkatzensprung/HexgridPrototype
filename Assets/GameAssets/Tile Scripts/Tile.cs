@@ -194,4 +194,24 @@ public class Tile : MonoBehaviour
         return thisEdge.Type == otherEdge.Type;
     }
 
+    /// <summary>
+    /// Returns true when all edges of this type are connected to other tiles
+    /// </summary>
+    internal bool IsClosed(EdgeType type)
+    {
+        var tile = hexGrid.Board[hex];
+
+        for (int edgeIndex = 0; edgeIndex < tile.Edges.Length; edgeIndex++)
+        {
+            if (tile.Edges[edgeIndex].Type == type)
+            {
+                int rotatedEdge = (edgeIndex + tile.CurrentRotation) % 6;
+                var neighborHex = HexUtils.GetNeighbour(hex, rotatedEdge);
+
+                if (!hexGrid.HasTile(hex)) return false;
+            }
+        }
+
+        return true;
+    }
 }

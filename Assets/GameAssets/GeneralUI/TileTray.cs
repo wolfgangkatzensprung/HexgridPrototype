@@ -15,7 +15,7 @@ public class TileTray : MonoBehaviour
 
     private GameObject[] tilePrefabs;   // load from resources
 
-    private GameObject RndTilePrefab => tilePrefabs[Random.Range(0, tilePrefabs.Length)];
+    public GameObject RndTilePrefab => tilePrefabs[Random.Range(0, tilePrefabs.Length)];
 
     private void Awake()
     {

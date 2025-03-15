@@ -4,12 +4,9 @@ using System.Collections.Generic;
 public class Level : Singleton<Level>
 {
     [SerializeField] HexGrid hexGrid;
-
-    // Breadth-First-Search
     public bool IsAreaCompleted(Hex hex, EdgeType type)
     {
-        if (type == EdgeType.None) return false;
-        if (!hexGrid.Board.ContainsKey(hex)) return false;
+        if (!IsValidEdgeType(type) || !IsHexValid(hex)) return false;
 
         Debug.Log($"Check Area Completion for {type}");
 
@@ -20,7 +17,6 @@ public class Level : Singleton<Level>
         while (toVisit.Count > 0)
         {
             Hex currentHex = toVisit.Dequeue();
-
             if (visited.Contains(currentHex)) continue;
             visited.Add(currentHex);
 
@@ -28,23 +24,39 @@ public class Level : Singleton<Level>
 
             foreach (var neighborHex in neighborHexes)
             {
-                if (!hexGrid.Board.ContainsKey(neighborHex)) continue;
+                if (!IsHexValid(neighborHex)) continue;
                 if (currentHex == neighborHex) continue;
 
-                Tile tile = hexGrid.Board[currentHex];
-                Tile neighborTile = hexGrid.Board[neighborHex];
-
-                var sharedEdgeIndex = HexUtils.GetSharedEdgeIndex(currentHex, neighborHex);
-
-                if (neighborTile.Edges[sharedEdgeIndex].Type != type) return false;
+                if (!IsEdgeMatchingType(currentHex, neighborHex, type)) return false;
 
                 if (!visited.Contains(neighborHex))
                 {
                     toVisit.Enqueue(neighborHex);
                 }
             }
+
+            if (!hexGrid.GetTile(currentHex).IsClosed(type)) return false;
         }
 
         return true;
     }
+
+    private bool IsValidEdgeType(EdgeType type)
+    {
+        return type != EdgeType.None;
+    }
+
+    private bool IsHexValid(Hex hex)
+    {
+        return hexGrid.Board.ContainsKey(hex);
+    }
+
+    private bool IsEdgeMatchingType(Hex currentHex, Hex neighborHex, EdgeType type)
+    {
+        Tile tile = hexGrid.Board[currentHex];
+        Tile neighborTile = hexGrid.Board[neighborHex];
+        var sharedEdgeIndex = HexUtils.GetSharedEdgeIndex(currentHex, neighborHex);
+        return tile.Matches(neighborTile, sharedEdgeIndex);
+    }
+
 }
