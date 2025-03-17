@@ -5,11 +5,22 @@ using static HexUtils;
 public class TileDebugger : Singleton<TileDebugger>
 {
     [SerializeField] TMP_Text debugText;
+    [SerializeField] TilePlacer tilePlacer;
+
+    private void OnEnable()
+    {
+        debugText.enabled = true;
+    }
+
+    private void OnDisable()
+    {
+        if (debugText == null) return;
+
+        debugText.enabled = false;
+    }
 
     private void OnGUI()
     {
-        var tilePlacer = FindAnyObjectByType<TilePlacer>();
-
         if (debugText == null) return;
         if (tilePlacer == null) return;
         if (tilePlacer.CurrentTile == null) return;

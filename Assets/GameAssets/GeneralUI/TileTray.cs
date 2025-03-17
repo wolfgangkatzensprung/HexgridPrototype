@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 public class TileTray : MonoBehaviour
@@ -19,8 +20,20 @@ public class TileTray : MonoBehaviour
 
     private void Awake()
     {
-        var folderToLoad = RESOURCE_FOLDER + STAGE_1;
-        tilePrefabs = Resources.LoadAll<GameObject>(folderToLoad);
+        LoadPrefabs();
+    }
+
+    private void LoadPrefabs()
+    {
+        var stage1 = RESOURCE_FOLDER + STAGE_1;
+        var stageX = RESOURCE_FOLDER;
+
+        var tiles1 = Resources.LoadAll<GameObject>(stage1);
+        var tilesX = Resources.LoadAll<GameObject>(stageX);
+
+        var allTiles = tiles1.Concat(tilesX).ToArray(); // for testing
+
+        tilePrefabs = tiles1;
     }
 
     private void Start()
