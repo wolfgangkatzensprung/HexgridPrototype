@@ -33,7 +33,7 @@ public class TileTray : MonoBehaviour
 
         var allTiles = tiles1.Concat(tilesX).ToArray(); // for testing
 
-        tilePrefabs = tiles1;
+        tilePrefabs = allTiles;
     }
 
     private void Start()
